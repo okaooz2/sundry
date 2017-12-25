@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>省市区三级联动菜单</title>
+</head>
+<body>
+    <div class="main">
+        <select name="province" id="province">
+            <option value="0">---请选择省份---</option>
+        </select>
+        <select name="city" id="city">
+            <option value="0">---请选择市---</option>
+        </select>
+        <select name="area" id="area">
+            <option value="0">---请选择区---</option>
+        </select>
+    </div>
+</body>
+<script>
+    var provinces = ["河北省", "山西省", "内蒙古"];
+    var cities = [
+        ["石家庄 ", "唐山",  "秦皇岛"], 
+        ["太原", "大同", "阳泉"], 
+        ["呼和浩特", "包头", "乌海"]
+    ];
+    var areas = [
+        [
+            ["1区", "2区"], ["3区", "4区"], ["5区", "6区"]
+        ], 
+        [
+            ["A区", "B区", "C区"], ["D区", "E区", "F区"], ["G区", "H区", "I区"]
+        ], 
+        [
+            ["一区", "二区"], ["三区", "四区"], ["五区", "六区"]
+        ]
+    ];
+</script>
+<script src="../js/jQuery.js"></script>
+<script>
+$(function() {
+    //加载省份
+    for(let i=0, len=provinces.length; i<len; ++i) {
+        var dom = "<option value='" + (i+1) + "'>" + provinces[i] + "</option>";
+        $(".main #province").append(dom);
+    }
+
+    //
+    $(".main #province")
+    .data({"index": $(this).find("option:selected").index()})
+    .on("mouseup", function() {
+        var now_index = $(this).find("option:selected").index();
+        if(now_index !== $(this).data("index")) {
+            reset($(this).nextAll());
+        }
+        $(this).data({"index": now_index});
+    });
+
+    //根据省份加载市
+    var index_prov = -100;
+    $(".main #city")
+    .data({"index": $(this).find("option:selected").index()})
+    .on("mousedown", function() {
+        //获取以前选中的选项的索引值
+        var pro_index = $(this).find("option:selected").index();
+        //清除以前的选项
+        $("option:gt(0)", this).remove();
+        //判断前一项是否有效
+        if($(".main #province option:selected").html() === "---请选择省份---") {
+            return ;
+        }
+        //获取选中的省
+        var $province = $(".main #province option:selected");
+        //获取选中省在数组中的位置
+        index_prov = $(".main #province option").index($province);
+        //根据选中的省加载市
+        for(let i=0, len=cities.length; i<len; ++i) {
+            var dom = "<option value='" + (i+1) + "'>" + cities[index_prov-1][i] + "</option>";
+            $(this).append(dom);
+        }
+        //根据还原之前选中的选项
+        $(this).find("option").get(pro_index).selected = true;
+    })
+    .on("mouseup", function() {
+        var now_index = $(this).find("option:selected").index();
+        if(now_index !== $(this).data("index")) {
+            reset($(this).nextAll());
+        }
+        $(this).data({"index": now_index});
+    });;
+
+    //根据城市加载省份
+    $(".main #area").on("mousedown", function() {
+        //获取以前选中的选项的索引值
+        var pro_index = $(this).find("option:selected").index();
+        //清除以前的选项
+        $("option:gt(0)", this).remove();
+        //判断前一项是否有效
+        if($(".main #city option:selected").html() === "---请选择市---") {
+            return ;
+        }
+        //获取选中的市
+        var $city = $(".main #city option:selected");
+        //获取选中市在数组中的位置
+        var index_city = $(".main #city option").index($city);
+        //根据选中的市加载区
+        var area = areas[index_prov-1][index_city-1];
+        for(let i=0, len=area.length; i<len; ++i) {
+            var dom = "<option value='" + (i+1) + "'>" + area[i] + "</option>";
+            $(this).append(dom);
+        }
+        //根据还原之前选中的选项
+        $(this).find("option").get(pro_index).selected = true;
+    });
+
+    function reset($obj) {
+        $("option:gt(0)" ,$obj).remove();
+        $obj.find("option").prop({"selected": true});
+    }
+});
+</script>
+</html>
