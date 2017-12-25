@@ -20,6 +20,7 @@
         .snowflake {
             position: fixed;
             color: #fff;
+            /* font-weight: bold; */
         }
     </style>
 </head>
@@ -40,8 +41,8 @@ $(function() {
         //雪花水平运动范围
         this.max_left = $(window).width();   //单位px
         this.min_left = 0;
-        this.max_delta_range = 0;   //此值会被后面的函数定时改变
-        this.max = 300;     //max_delta_range的改变范围为-max ~ max
+        this.max_delta_range = 300;   //此值会被后面的函数定时改变
+        // this.max = 400;     //max_delta_range的改变范围为-max ~ max
         //雪花下落速度范围
         this.max_drop_speed = 10000;   //单位毫秒
         this.min_drop_speed = 7000;
@@ -58,10 +59,10 @@ $(function() {
         //生成一个雪花
         makeSnowflake: function() {
             //生成各个随机的参数
-            var ini_left = randRange(this.min_left, this.max_left);
-            var end_left = ini_left + randRange(this.max_delta_range, 0);
-            var drog_speed = randRange(this.min_drop_speed, this.max_drop_speed);
             var size = randRange(this.min_size, this.max_size);
+            var ini_left = randRange(this.min_left, this.max_left-size);
+            var end_left = ini_left + randRange(-this.max_delta_range, this.max_delta_range);
+            var drog_speed = randRange(this.min_drop_speed, this.max_drop_speed);
             var ini_opacity = randRange(this.middle_opacity, this.max_opacity);
             var end_opacity = randRange(this.min_opacity, this.middle_opacity);
 
@@ -85,19 +86,19 @@ $(function() {
         //定时生成雪花，并添加到文档里(body里)
         timingGenerate: function() {
             var that = this;
-            var flag = false;
+            // var flag = false;
             (function() {
                 var $snowflake = that.makeSnowflake();
                 $snowflake.appendTo(document.body);
 
-                var range = that.max_delta_range;
-                if(range > that.max) {
-                    flag = true;
-                }
-                else if(range < -that.max) {
-                    flag = false;
-                }
-                that.max_delta_range = flag ? range -= 10 : range += 10;
+                // var range = that.max_delta_range;
+                // if(range > that.max) {
+                //     flag = true;
+                // }
+                // else if(range < -that.max) {
+                //     flag = false;
+                // }
+                // that.max_delta_range = flag ? range -= 10 : range += 10;
 
                 setTimeout(arguments.callee, that.generate_speed);
             })();
