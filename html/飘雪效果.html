@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>飘雪效果</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            font-family: "微软雅黑";
+            font-size: 1em;
+        }
+
+        body {
+            background: #000;
+        }
+
+        .snowflake {
+            position: fixed;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    
+</body>
+<script src="../js/jQuery.js"></script>
+<script>
+$(function() {
+    //定义雪花对象
+    function Snowflake() {
+        //雪花大小范围
+        this.max_size = 70;  //单位px
+        this.min_size = 20;
+        //雪花竖直运动范围
+        this.ini_top = -this.max_size;    //单位px
+        this.end_top = $(window).height();
+        //雪花水平运动范围
+        this.max_left = $(window).width();   //单位px
+        this.min_left = 0;
+        this.max_delta_range = 0;   //此值会被后面的函数定时改变
+        this.max = 300;     //max_delta_range的改变范围为-max ~ max
+        //雪花下落速度范围
+        this.max_drop_speed = 10000;   //单位毫秒
+        this.min_drop_speed = 7000;
+        //雪花刷新速度范围
+        this.generate_speed = 200;      //单位毫秒
+        //雪花不透明度范围
+        this.max_opacity = 1.0;
+        this.middle_opacity = 0.5;
+        this.min_opacity = 0.25;
+        //雪花字符
+        this.char_snowflake = "❄";
+    }
+    Snowflake.prototype = {
+        //生成一个雪花
+        makeSnowflake: function() {
+            //生成各个随机的参数
+            var ini_left = randRange(this.min_left, this.max_left);
+            var end_left = ini_left + randRange(this.max_delta_range, 0);
+            var drog_speed = randRange(this.min_drop_speed, this.max_drop_speed);
+            var size = randRange(this.min_size, this.max_size);
+            var ini_opacity = randRange(this.middle_opacity, this.max_opacity);
+            var end_opacity = randRange(this.min_opacity, this.middle_opacity);
+
+            var that = this;
+            return $("<div class='snowflake'></div>")
+                        .html(that.char_snowflake)
+                        .css({
+                            "left": ini_left + "px",
+                            "top": that.ini_top + "px",
+                            "font-size": size + "px",
+                            "opacity": ini_opacity
+                        })
+                        .animate({
+                            "left": end_left + "px",
+                            "top": that.end_top + "px",
+                            "opacity": end_opacity
+                        }, drog_speed, function() {
+                            $(this).remove();
+                        });
+        },
+        //定时生成雪花，并添加到文档里(body里)
+        timingGenerate: function() {
+            var that = this;
+            var flag = false;
+            (function() {
+                var $snowflake = that.makeSnowflake();
+                $snowflake.appendTo(document.body);
+
+                var range = that.max_delta_range;
+                if(range > that.max) {
+                    flag = true;
+                }
+                else if(range < -that.max) {
+                    flag = false;
+                }
+                that.max_delta_range = flag ? range -= 10 : range += 10;
+
+                setTimeout(arguments.callee, that.generate_speed);
+            })();
+            
+        }
+    };
+
+    function randRange(min, max) {
+        return Math.random()*(max-min) + min;
+    }
+
+    var snowflakes = new Snowflake();
+    snowflakes.timingGenerate();
+});
+</script>
+</html>
