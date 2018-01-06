@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>轮播图</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            font-family: "微软雅黑";
+            font-size: 1em;
+        }
+
+        .display-frame {
+            position: relative;
+            overflow: hidden;
+            width: 590px;
+            height: 470px;
+            margin: 30px auto;
+        }
+        .display-frame .side-key {
+            position: absolute;
+            cursor: pointer;
+            width: 1em;
+            height: 2em;
+            line-height: 2em;
+            background: #00000085;
+            transform: translate(0, -50%);
+            font-size: 2em;
+            color: #fff;
+            text-align: center;
+        }
+        .side-key.left {
+            /* left: 0px; */
+            right: 100%;
+            top: 50%;
+        }
+        .side-key.right {
+            /* right: 0px; */
+            left: 100%;
+            top: 50%;
+        }
+        .display-frame .bar {
+            position: absolute;
+            left: 30px;
+            top: 435px;
+        }
+        .display-frame .bar div {
+            margin: 3px;
+            line-height: 30px;
+            text-align: center;
+            float: left;
+            font-size: 1.5em;
+        } 
+        .display-frame .bar div::after {
+            content: "";
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            border: 3px solid #b9bebaa9;
+        }
+        .display-frame .bar div.focus::after {
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="display-frame">
+        <a href="">
+            <img src="../image/轮播图-1.jpg" alt="">
+        </a>
+        <div class="side-key left">
+            <span><</span>
+        </div>
+        <div class="side-key right">
+            <span>></span>
+        </div>
+        <div class="bar">
+            <div class="focus"></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</body>
+<script src="../js/jQuery.js"></script>
+<script>
+$(function() {
+    img_address = ["../image/轮播图-1.jpg", "../image/轮播图-2.jpg", "../image/轮播图-3.jpg", "../image/轮播图-4.jpg", "../image/轮播图-5.jpg", "../image/轮播图-6.jpg", "../image/轮播图-7.jpg", "../image/轮播图-8.jpg"];
+    $(".display-frame a img").data("page", 0);
+
+    //绑定按钮的进出功能
+    $(".display-frame")
+    .on("mouseenter", function() {
+        $(".right", this)
+        .stop()
+        .animate({
+            "left": $(this).width() - $(".right", this).width() + "px"
+        }, 300);
+        $(".left", this)
+        .stop()
+        .animate({
+            "left": "0px"
+        }, 300);
+    })
+    .on("mouseleave", function() {
+        $(".right", this)
+        .stop()
+        .animate({
+            "left": "100%"
+        }, 300);
+        $(".left", this)
+        .stop()
+        .animate({
+            "left": - $(".left", this).width() + "px"
+        }, 300);
+    });
+    //给左右按钮绑定移动功能
+    $(".display-frame .side-key.right")
+    .on("click", function() {
+        var page = $(".display-frame a img").data("page");
+        if(page < img_address.length-1) {
+            ++page;
+        }
+        else {
+            page = 0;
+        }
+        changeImg(page);
+    });
+    $(".display-frame .side-key.left")
+    .on("click", function() {
+        var page = $(".display-frame a img").data("page");
+        if(page === 0) {
+            page = img_address.length-1;
+        }
+        else {
+            --page;
+        ;
+        }
+        changeImg(page);
+    });
+    //绑定下面小按钮
+    $(".display-frame .bar > div")
+    .on("mouseenter", function() {
+        var num = $(this).parent().find("> div").index(this);
+        changeImg(num);
+    });
+    //定时切换图片
+    setTimeout(function() {
+        var page = $(".display-frame a img").data("page");
+        if(page < img_address.length-1) {
+            ++page;
+        }
+        else {
+            page = 0;
+        }
+        changeImg(page);
+
+        setTimeout(arguments.callee, 4000);
+    }, 4000);
+
+    function changeImg(page) {
+        $(".display-frame a img")
+        .animate({
+            "opacity": "0.2"
+        }, 100, function() {
+            $(this)
+            .prop("src", img_address[page])
+            .animate({
+                "opacity": "1"
+            }, 100);
+        })
+        .data("page", page);
+
+        $(".display-frame .bar div")
+        .removeClass("focus")
+        .eq(page)
+        .addClass("focus");
+    }
+});
+</script>
+</html>

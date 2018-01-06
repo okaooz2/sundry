@@ -50,8 +50,8 @@ $(function() {
         this.generate_speed = 200;      //单位毫秒
         //雪花不透明度范围
         this.max_opacity = 1.0;
-        this.middle_opacity = 0.5;
-        this.min_opacity = 0.25;
+        this.min_opacity = 0.5;
+        this.delta_opacity = 0.3;
         //雪花字符
         this.char_snowflake = "❄";
     }
@@ -63,8 +63,8 @@ $(function() {
             var ini_left = randRange(this.min_left, this.max_left-size);
             var end_left = ini_left + randRange(-this.max_delta_range, this.max_delta_range);
             var drog_speed = randRange(this.min_drop_speed, this.max_drop_speed);
-            var ini_opacity = randRange(this.middle_opacity, this.max_opacity);
-            var end_opacity = randRange(this.min_opacity, this.middle_opacity);
+            var ini_opacity = randRange(this.min_opacity, this.max_opacity);
+            var end_opacity = ini_opacity - this.delta_opacity;
 
             var that = this;
             return $("<div class='snowflake'></div>")
