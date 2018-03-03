@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>渗透问题</title>
+    <style>
+        table td {
+            width: 10px;
+            height: 10px;
+            background-color: #ccc;
+        }
+
+        table td.is-permeated {
+            background-color: #ff0;
+            transition-duration: 0.5s;
+        }
+        table td.is-permeated.is-path {
+            background-color: #f00;
+            transition-duration: 1s;
+        }
+    </style>
+</head>
+<body>
+<form action="">
+    <fieldset>
+        <legend>请输入参数</legend>
+        <label for="length">长度： </label>
+        <input type="number" id="length" min="1" value="7">
+        <label for="width">宽度： </label>
+        <input type="number" id="width" min="1" value="5">
+
+        <br><br>
+        <button type="submit">确定</button>
+        <input type="reset">
+    </fieldset>
+</form>
+
+<div class="table">
+    
+</div>
+
+</body>
+<script src="../js/jQuery 3.2.1.min.js"></script>
+<script src="../js/Connection.js"></script>
+<script src="../js/渗透问题_1.js"></script>
+</html>
