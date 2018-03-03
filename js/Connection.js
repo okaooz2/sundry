@@ -149,20 +149,76 @@ Connection.prototype = {
         }
         return root_node;
     },
+    //得到连通顶部与底部渗透块节点id的集合，返回一个数组
+    findPermeatedIds: function() {
+        var top_id = this.width*this.length;
+        var permeatedIds = [];
+
+        for(var i=this.width*this.length-1; i>=0; --i) {
+            if(this.nodes[i].is_permeated && this.isConnected(this.nodes[i], this.nodes[top_id])) {
+                permeatedIds.push(this.nodes[i].id);
+            }
+        }
+
+        return permeatedIds;
+    },
+    //将输入的节点集合重新划分连通块，输入需要重新分连通块的节点id集合数组，返回对象
+    classify: function(permeatedIds) {
+        var new_blocks = {};    //存放重新分类好的节点块，其内元素应为数组
+        //重新初始化节点的某些属性
+        for(var i=permeatedIds.length-1; i>=0; --i) {
+            var id = permeatedIds[i];
+            var node = this.nodes[id];
+            node.next_id = node.id;
+            node.size = 1;
+            node.is_permeated = false;
+        }
+        //重新划分连通块
+        for(var i=permeatedIds.length-1; i>=0; --i) {
+            this.letPermeated(permeatedIds[i]);
+        }
+        for(var i=permeatedIds.length-1; i>=0; --i) {
+            var id = permeatedIds[i];
+            var root_id = this.findRootNode(this.nodes[id]).id;
+            if(typeof new_blocks[root_id] === "undefined") {
+                new_blocks[root_id] = [];
+            }
+            new_blocks[root_id].push(id);
+        }
+
+        return new_blocks;
+    },
+    //做渗透块图
+    draw: function() {
+        var width = this.width;
+        var length = this.length;
+
+        var permeatedIds = this.findPermeatedIds();
+        var resual = this.classify(permeatedIds);
+        for(var key in resual) {
+            var arr = resual[key];
+            if(isOk(arr[0]) && arr.length>=width && isOk(arr[arr.length-1])) {
+                for(var i=arr.length-1; i>=0; --i) {
+                    this.element.querySelector("td:nth-of-type(" + (arr[i] + 1) + ")")
+                    .className += " " + this.path_name;
+                }
+            }
+        }
+
+        function isOk(id) {
+            if(id>=0 && id<length) {
+                return true;
+            }
+            else if(id<length*width && id>=length*(width-1)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    },
     //随机使区域中的节点渗透，知道渗透结束（顶部与底部连通）
     work: function() {
-        // /*****************************************************************************/
-        // //这里先有序渗透以测试效果（以调试完成）
-        // var button_id = this.nodes.length - 1;
-        // var top_id = button_id - 1;
-        // while(this.to_permeated_id.length !== 0) {
-        //     var id = this.to_permeated_id.pop();
-        //     this.letPermeated(id);
-        //     this.element.querySelector("td:nth-of-type(" + (id + 1) + ")")
-        //         .className += " " + this.class_name;
-        // }
-        // console.log(this.nodes);
-
         var that = this;
         var button_id = this.nodes.length - 1;
         var top_id = button_id - 1;
@@ -180,20 +236,7 @@ Connection.prototype = {
                 window.setTimeout(arguments.callee, that.timeout);
             }
             else {  //画出连通的路线
-                var path_id = -1;
-                if(that.findRootNode(that.nodes[top_id]).id === button_id) {    //底部在树结构的上层
-                    path_id = button_id;
-                }
-                else {  //底部在树结构的下层
-                    path_id = top_id;
-                }
-
-                for(var i=that.width*that.length-1; i>=0; --i) {
-                    if(that.isConnected(that.nodes[i], that.nodes[path_id])) {
-                        that.element.querySelector("td:nth-of-type(" + (i + 1) + ")")
-                            .className += " " + that.path_name;
-                    }
-                }
+                that.draw();
             }
         })();
     }
