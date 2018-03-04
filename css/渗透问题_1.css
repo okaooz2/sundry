@@ -11,8 +11,10 @@ form div.group {
 }
 
 table td {
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
+    margin: 0px;
+    padding: 0px;
     background-color: #ccc;
 }
 

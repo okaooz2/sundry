@@ -18,6 +18,7 @@ Node.prototype = {
 function Connection() {
     this.nodes = [];    //节点集合
     this.to_permeated_id = [];  //待渗透节点的id集合
+    this.is_permeated_id = [];  //未渗透节点的id集合
     this.width = -1;    //区域宽度
     this.length = -1;   //区域长度
     
@@ -26,6 +27,7 @@ function Connection() {
     this.per_topoint_class = "";    //被渗透且连到节点的类名
     this.path_class = "";    //路径节点的类名
     this.timeout = -1;      //渗透节点的时间间隔，单位毫秒
+    this.setTime = null;      //放事件延迟执行函数的指针
 }
 Connection.prototype = {
     //初始化对象的方法
@@ -156,9 +158,20 @@ Connection.prototype = {
         var top_id = this.width*this.length;
         var permeatedIds = [];
 
-        for(var i=this.width*this.length-1; i>=0; --i) {
-            if(this.nodes[i].is_permeated && this.isConnected(this.nodes[i], this.nodes[top_id])) {
-                permeatedIds.push(this.nodes[i].id);
+        // for(var i=this.width*this.length-1; i>=0; --i) {
+        //     if(this.nodes[i].is_permeated && this.isConnected(this.nodes[i], this.nodes[top_id])) {
+        //         permeatedIds.push(this.nodes[i].id);
+        //     }
+        // }
+
+        var is_permeated_id = this.is_permeated_id;
+        is_permeated_id.sort(function(a, b) {   //由小到大排序
+            return a <= b ? -1 : 1;
+        });
+        var nodes = this.nodes;
+        for(var i=is_permeated_id.length-1; i>=0; --i) {
+            if(this.isConnected(nodes[is_permeated_id[i]], nodes[top_id])) {
+                permeatedIds.push(nodes[is_permeated_id[i]].id);
             }
         }
 
@@ -225,18 +238,20 @@ Connection.prototype = {
         var button_id = this.nodes.length - 1;
         var top_id = button_id - 1;
         var nodes = this.nodes;
+        var is_permeated_id = this.is_permeated_id;
         (function() {
             //生成随机整数，取值范围为[min, max)
             var random = Math.floor(Math.random()*that.to_permeated_id.length);
             //剔除随机选中的元素，并在dom元素中添加类名
             var del_id = that.to_permeated_id.splice(random, 1)[0];
+            that.is_permeated_id.push(del_id);
             that.letPermeated(del_id);
             //标示出于两端相连的渗透的节点
             if(that.isConnected(nodes[del_id],nodes[top_id]) || that.isConnected(nodes[del_id],nodes[button_id])) {
-                for(var i=that.width*that.length-1; i>=0; --i) {
-                    if(nodes[i].is_permeated && (that.isConnected(nodes[i],nodes[top_id]) 
-                    || that.isConnected(nodes[i],nodes[button_id]))) {
-                        $(that.element.querySelector("td:nth-of-type(" + (i + 1) + ")"))
+                for(var i=is_permeated_id.length-1; i>=0; --i) {
+                    if(that.isConnected(nodes[is_permeated_id[i]],nodes[top_id]) 
+                    || that.isConnected(nodes[is_permeated_id[i]],nodes[button_id])) {
+                        $(that.element.querySelector("td:nth-of-type(" + (is_permeated_id[i] + 1) + ")"))
                         .removeClass(that.permeated_class)
                         .addClass(that.per_topoint_class); 
                     }
@@ -249,12 +264,31 @@ Connection.prototype = {
             }
 
             //直到两端连通为止，都要继续执行本函数
+
             if(!that.isConnected(nodes[button_id], nodes[top_id])) {
-                window.setTimeout(arguments.callee, that.timeout);
+                that.setTime = window.setTimeout(arguments.callee, that.timeout);
             }
             else {  //画出连通的路线
                 that.draw();
+                that.stop();
             }
         })();
+    },
+    //终止执行
+    stop: function() {
+        clearTimeout(this.setTime);
+
+        this.nodes = [];    //节点集合
+        this.to_permeated_id = [];  //待渗透节点的id集合
+        this.is_permeated_id = [];  //未渗透节点的id集合
+        this.width = -1;    //区域宽度
+        this.length = -1;   //区域长度
+        
+        this.element = null;    //表格元素
+        this.permeated_class = "";   //被渗透节点的类名的类名
+        this.per_topoint_class = "";    //被渗透且连到节点的类名
+        this.path_class = "";    //路径节点的类名
+        this.timeout = -1;      //渗透节点的时间间隔，单位毫秒
+        this.setTime = null;      //放事件延迟执行函数的指针
     }
 };
