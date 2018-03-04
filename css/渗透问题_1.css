@@ -1,0 +1,62 @@
+form input {
+    width: 5em;
+}
+form span {
+    font-size: 0.8em;
+    color: #f00;
+}
+form div.group {
+    display: inline;
+    margin-right: 3em;
+}
+
+table td {
+    width: 10px;
+    height: 10px;
+    background-color: #ccc;
+}
+
+/* table td.is-permeated {
+    background-color: #ff0;
+    transition-duration: 0.5s;
+} */
+/* table td.is-permeated.is-path {
+    background-color: #f00;
+    transition-duration: 1s;
+} */
+table td.is-permeated {
+    animation: permeated 0.5s;
+    animation-fill-mode: forwards;
+}
+table td.permeated-endpoint {
+    animation: permeated-endpoint 0.5s;
+    animation-fill-mode: forwards;
+}
+table td.is-path {
+    animation: path 2.5s;
+    animation-fill-mode: forwards;
+}
+@keyframes permeated {
+    0% {
+        background-color: #000;
+    }
+    100% {
+        background-color: #ff0;
+    }
+}
+@keyframes permeated-endpoint {
+    0% {
+        background-color: #000;
+    }
+    100% {
+        background-color: #00f;
+    }
+}
+@keyframes path {
+    0% {
+        background-color: #fff;
+    }
+    100% {
+        background-color: #f00;
+    }
+}

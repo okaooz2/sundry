@@ -8,6 +8,7 @@ $("form").on("submit", function(event) {
     // 根据输入数据创建表格
     var length = $("#length", this).val(); length = parseInt(length);
     var width = $("#width", this).val(); width = parseInt(width);
+    var speed = $("#speed", this).val(); speed = parseInt(speed);
     var $table = $("<table border='1'></table>");
 
     for(var i=0; i<width; ++i) {
@@ -27,7 +28,7 @@ $("form").on("submit", function(event) {
         permeated_class: "is-permeated",
         per_topoint_class: "permeated-endpoint",
         path_class: "is-path",
-        timeout: 300
+        timeout: speed
     });
     connection.work();
 });

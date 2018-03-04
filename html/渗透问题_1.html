@@ -5,68 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>渗透问题</title>
-    <style>
-        table td {
-            width: 10px;
-            height: 10px;
-            background-color: #ccc;
-        }
-
-        /* table td.is-permeated {
-            background-color: #ff0;
-            transition-duration: 0.5s;
-        } */
-        /* table td.is-permeated.is-path {
-            background-color: #f00;
-            transition-duration: 1s;
-        } */
-        table td.is-permeated {
-            animation: permeated 0.5s;
-            animation-fill-mode: forwards;
-        }
-        table td.permeated-endpoint {
-            animation: permeated-endpoint 0.5s;
-            animation-fill-mode: forwards;
-        }
-        table td.is-path {
-            animation: path 2.5s;
-            animation-fill-mode: forwards;
-        }
-        @keyframes permeated {
-            0% {
-                background-color: #000;
-            }
-            100% {
-                background-color: #ff0;
-            }
-        }
-        @keyframes permeated-endpoint {
-            0% {
-                background-color: #000;
-            }
-            100% {
-                background-color: #00f;
-            }
-        }
-        @keyframes path {
-            0% {
-                background-color: #fff;
-            }
-            100% {
-                background-color: #f00;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../css/渗透问题_1.css">
 </head>
 <body>
 <form action="">
     <fieldset>
         <legend>请输入参数</legend>
-        <label for="length">长度： </label>
-        <input type="number" id="length" min="1" value="21">
+        <div class="group">
+            <label for="length">长度： </label>
+            <input type="number" id="length" min="1" value="21">
+        </div>
+        <div class="group">
+            <label for="width">宽度： </label>
+            <input type="number" id="width" min="1" value="20">
+        </div>
         <br>
-        <label for="width">宽度： </label>
-        <input type="number" id="width" min="1" value="20">
+
+        <div class="group">
+            <label for="">速度：</label>
+            <input type="number" id="speed" min="17" value="300">
+            <span>（数字越小越快）</span>
+        </div>
 
         <br><br>
         <button type="submit">确定</button>
