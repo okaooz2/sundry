@@ -250,7 +250,6 @@ Connection.prototype = {
                     if(that.isConnected(nodes[is_permeated_id[i]],nodes[top_id]) 
                     || that.isConnected(nodes[is_permeated_id[i]],nodes[button_id])) {
                         $(that.element.querySelector("td:nth-of-type(" + (is_permeated_id[i] + 1) + ")"))
-                        .removeClass(that.permeated_class)
                         .addClass(that.per_topoint_class); 
                     }
                 }
