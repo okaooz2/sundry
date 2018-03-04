@@ -158,12 +158,6 @@ Connection.prototype = {
         var top_id = this.width*this.length;
         var permeatedIds = [];
 
-        // for(var i=this.width*this.length-1; i>=0; --i) {
-        //     if(this.nodes[i].is_permeated && this.isConnected(this.nodes[i], this.nodes[top_id])) {
-        //         permeatedIds.push(this.nodes[i].id);
-        //     }
-        // }
-
         var is_permeated_id = this.is_permeated_id;
         is_permeated_id.sort(function(a, b) {   //由小到大排序
             return a <= b ? -1 : 1;
