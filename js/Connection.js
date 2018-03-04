@@ -22,8 +22,9 @@ function Connection() {
     this.length = -1;   //区域长度
     
     this.element = null;    //表格元素
-    this.class_name = "";   //被渗透节点的类名的类名
-    this.path_name = "";    //路径节点的类名
+    this.permeated_class = "";   //被渗透节点的类名的类名
+    this.per_topoint_class = "";    //被渗透且连到节点的类名
+    this.path_class = "";    //路径节点的类名
     this.timeout = -1;      //渗透节点的时间间隔，单位毫秒
 }
 Connection.prototype = {
@@ -32,8 +33,9 @@ Connection.prototype = {
         this.width = obj.width;
         this.length = obj.length;
         this.element = obj.element;
-        this.class_name = obj.class_name;
-        this.path_name = obj.path_name;
+        this.permeated_class = obj.permeated_class;
+        this.per_topoint_class = obj.per_topoint_class;
+        this.path_class = obj.path_class;
         this.timeout = obj.timeout;
 
         //创建节点集合
@@ -199,8 +201,8 @@ Connection.prototype = {
             var arr = resual[key];
             if(isOk(arr[0]) && arr.length>=width && isOk(arr[arr.length-1])) {
                 for(var i=arr.length-1; i>=0; --i) {
-                    this.element.querySelector("td:nth-of-type(" + (arr[i] + 1) + ")")
-                    .className += " " + this.path_name;
+                    $(this.element.querySelector("td:nth-of-type(" + (arr[i] + 1) + ")"))
+                    .addClass(this.path_class);
                 }
             }
         }
@@ -222,17 +224,32 @@ Connection.prototype = {
         var that = this;
         var button_id = this.nodes.length - 1;
         var top_id = button_id - 1;
+        var nodes = this.nodes;
         (function() {
             //生成随机整数，取值范围为[min, max)
             var random = Math.floor(Math.random()*that.to_permeated_id.length);
             //剔除随机选中的元素，并在dom元素中添加类名
             var del_id = that.to_permeated_id.splice(random, 1)[0];
             that.letPermeated(del_id);
-            that.element.querySelector("td:nth-of-type(" + (del_id + 1) + ")")
-                .className += " " + that.class_name;
+            //标示出于两端相连的渗透的节点
+            if(that.isConnected(nodes[del_id],nodes[top_id]) || that.isConnected(nodes[del_id],nodes[button_id])) {
+                for(var i=that.width*that.length-1; i>=0; --i) {
+                    if(nodes[i].is_permeated && (that.isConnected(nodes[i],nodes[top_id]) 
+                    || that.isConnected(nodes[i],nodes[button_id]))) {
+                        $(that.element.querySelector("td:nth-of-type(" + (i + 1) + ")"))
+                        .removeClass(that.permeated_class)
+                        .addClass(that.per_topoint_class); 
+                    }
+                }
+            }
+            //标示出于渗透但不与两端相连节点
+            else {
+                $(that.element.querySelector("td:nth-of-type(" + (del_id + 1) + ")"))
+                .addClass(that.permeated_class);
+            }
 
             //直到两端连通为止，都要继续执行本函数
-            if(!that.isConnected(that.nodes[button_id], that.nodes[top_id])) {
+            if(!that.isConnected(nodes[button_id], nodes[top_id])) {
                 window.setTimeout(arguments.callee, that.timeout);
             }
             else {  //画出连通的路线

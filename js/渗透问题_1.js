@@ -24,8 +24,9 @@ $("form").on("submit", function(event) {
         width: width,
         length: length,
         element: $table.get(0),
-        class_name: "is-permeated",
-        path_name: "is-path",
+        permeated_class: "is-permeated",
+        per_topoint_class: "permeated-endpoint",
+        path_class: "is-path",
         timeout: 300
     });
     connection.work();
