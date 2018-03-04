@@ -159,9 +159,6 @@ Connection.prototype = {
         var permeatedIds = [];
 
         var is_permeated_id = this.is_permeated_id;
-        is_permeated_id.sort(function(a, b) {   //由小到大排序
-            return a <= b ? -1 : 1;
-        });
         var nodes = this.nodes;
         for(var i=is_permeated_id.length-1; i>=0; --i) {
             if(this.isConnected(nodes[is_permeated_id[i]], nodes[top_id])) {
@@ -183,9 +180,11 @@ Connection.prototype = {
             node.is_permeated = false;
         }
         //重新划分连通块
+        //让节点渗透，该过程会自动分块
         for(var i=permeatedIds.length-1; i>=0; --i) {
             this.letPermeated(permeatedIds[i]);
         }
+        //记录各分块都有哪些节点
         for(var i=permeatedIds.length-1; i>=0; --i) {
             var id = permeatedIds[i];
             var root_id = this.findRootNode(this.nodes[id]).id;
@@ -206,11 +205,16 @@ Connection.prototype = {
         var resual = this.classify(permeatedIds);
         for(var key in resual) {
             var arr = resual[key];
-            if(isOk(arr[0]) && arr.length>=width && isOk(arr[arr.length-1])) {
+            //因为判断是取渗透块头尾两节点进行的，因此先排序更优，升序降序均可
+            arr.sort(function(a, b) {   //由小到大排序
+                return a <= b ? -1 : 1;
+            });
+            if(arr.length>=width && isOk(arr[0]) && isOk(arr[arr.length-1])) {
                 for(var i=arr.length-1; i>=0; --i) {
                     $(this.element.querySelector("td:nth-of-type(" + (arr[i] + 1) + ")"))
                     .addClass(this.path_class);
                 }
+                break;
             }
         }
 
