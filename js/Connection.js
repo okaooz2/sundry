@@ -21,6 +21,8 @@ function Connection() {
     this.is_permeated_id = [];  //未渗透节点的id集合
     this.width = -1;    //区域宽度
     this.length = -1;   //区域长度
+    this.top_id = -1;   //顶节点的id
+    this.button_id = -1;    //底节点的id
     
     this.element = null;    //表格元素
     this.permeated_class = "";   //被渗透节点的类名的类名
@@ -39,6 +41,9 @@ Connection.prototype = {
         this.per_topoint_class = obj.per_topoint_class;
         this.path_class = obj.path_class;
         this.timeout = obj.timeout;
+        
+        this.top_id = this.width*this.length;
+        this.button_id = this.top_id + 1;
 
         //创建节点集合
         var id = 0;
@@ -155,7 +160,7 @@ Connection.prototype = {
     },
     //得到连通顶部与底部渗透块节点id的集合，返回一个数组
     findPermeatedIds: function() {
-        var top_id = this.width*this.length;
+        var top_id = this.top_id;
         var permeatedIds = [];
 
         var is_permeated_id = this.is_permeated_id;
@@ -205,11 +210,9 @@ Connection.prototype = {
         var resual = this.classify(permeatedIds);
         for(var key in resual) {
             var arr = resual[key];
-            //因为判断是取渗透块头尾两节点进行的，因此先排序更优，升序降序均可
-            arr.sort(function(a, b) {   //由小到大排序
-                return a <= b ? -1 : 1;
-            });
-            if(arr.length>=width && isOk(arr[0]) && isOk(arr[arr.length-1])) {
+            if(arr.length>=width 
+            && isOk(Math.min.apply(null, arr)) 
+            && isOk(Math.max.apply(null, arr))) {
                 for(var i=arr.length-1; i>=0; --i) {
                     $(this.element.querySelector("td:nth-of-type(" + (arr[i] + 1) + ")"))
                     .addClass(this.path_class);
@@ -232,44 +235,44 @@ Connection.prototype = {
     },
     //随机使区域中的节点渗透，知道渗透结束（顶部与底部连通）
     work: function() {
-        var that = this;
-        var button_id = this.nodes.length - 1;
-        var top_id = button_id - 1;
-        var nodes = this.nodes;
+        var to_permeated_id = this.to_permeated_id;
         var is_permeated_id = this.is_permeated_id;
-        (function() {
-            //生成随机整数，取值范围为[min, max)
-            var random = Math.floor(Math.random()*that.to_permeated_id.length);
-            //剔除随机选中的元素，并在dom元素中添加类名
-            var del_id = that.to_permeated_id.splice(random, 1)[0];
-            that.is_permeated_id.push(del_id);
-            that.letPermeated(del_id);
-            //标示出于两端相连的渗透的节点
-            if(that.isConnected(nodes[del_id],nodes[top_id]) || that.isConnected(nodes[del_id],nodes[button_id])) {
-                for(var i=is_permeated_id.length-1; i>=0; --i) {
-                    if(that.isConnected(nodes[is_permeated_id[i]],nodes[top_id]) 
-                    || that.isConnected(nodes[is_permeated_id[i]],nodes[button_id])) {
-                        $(that.element.querySelector("td:nth-of-type(" + (is_permeated_id[i] + 1) + ")"))
-                        .addClass(that.per_topoint_class); 
-                    }
+        var nodes = this.nodes;
+        var top_id = this.top_id;
+        var button_id = this.button_id;
+        var element = this.element;
+
+        //生成随机整数，取值范围为[min, max)
+        var random = Math.floor(Math.random()*to_permeated_id.length);
+        //剔除随机选中的元素，并在dom元素中添加类名
+        var del_id =to_permeated_id.splice(random, 1)[0];
+        is_permeated_id.push(del_id);
+        this.letPermeated(del_id);
+        //标示出于两端相连的渗透的节点
+        if(this.isConnected(nodes[del_id],nodes[top_id]) || this.isConnected(nodes[del_id],nodes[button_id])) {
+            for(var i=is_permeated_id.length-1; i>=0; --i) {
+                if(this.isConnected(nodes[is_permeated_id[i]],nodes[top_id]) 
+                || this.isConnected(nodes[is_permeated_id[i]],nodes[button_id])) {
+                    $(element.querySelector("td:nth-of-type(" + (is_permeated_id[i] + 1) + ")"))
+                    .addClass(this.per_topoint_class); 
                 }
             }
-            //标示出于渗透但不与两端相连节点
-            else {
-                $(that.element.querySelector("td:nth-of-type(" + (del_id + 1) + ")"))
-                .addClass(that.permeated_class);
-            }
+        }
+        //标示出于渗透但不与两端相连节点
+        else {
+            $(element.querySelector("td:nth-of-type(" + (del_id + 1) + ")"))
+            .addClass(this.permeated_class);
+        }
 
-            //直到两端连通为止，都要继续执行本函数
+        //直到两端连通为止，都要继续执行本函数
 
-            if(!that.isConnected(nodes[button_id], nodes[top_id])) {
-                that.setTime = window.setTimeout(arguments.callee, that.timeout);
-            }
-            else {  //画出连通的路线
-                that.draw();
-                that.stop();
-            }
-        })();
+        if(!this.isConnected(nodes[button_id], nodes[top_id])) {
+            this.setTime = window.setTimeout(arguments.callee.bind(this), this.timeout);
+        }
+        else {  //画出连通的路线
+            this.draw();
+            this.stop();
+        }
     },
     //终止执行
     stop: function() {
@@ -280,6 +283,8 @@ Connection.prototype = {
         this.is_permeated_id = [];  //未渗透节点的id集合
         this.width = -1;    //区域宽度
         this.length = -1;   //区域长度
+        this.top_id = -1;   //顶节点的id
+        this.button_id = -1;    //底节点的id
         
         this.element = null;    //表格元素
         this.permeated_class = "";   //被渗透节点的类名的类名
