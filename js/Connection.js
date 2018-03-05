@@ -236,19 +236,20 @@ Connection.prototype = {
         var del_id =to_permeated_id.splice(random, 1)[0];
         is_permeated_id.push(del_id);
         this.letPermeated(del_id);
-        //标示出于两端相连的渗透的节点
+        //标示出与两端相连的渗透的节点
         if(this.isConnected(nodes[del_id],nodes[top_id]) || this.isConnected(nodes[del_id],nodes[button_id])) {
             for(var i=is_permeated_id.length-1; i>=0; --i) {
-                var num = is_permeated_id[i];
-                if(this.isConnected(nodes[num],nodes[top_id]) 
-                || this.isConnected(nodes[num],nodes[button_id])) {
-                    topoint_id.push(is_permeated_id.pop());
-                    element.querySelector("td:nth-of-type(" + (num + 1) + ")")
+                var id = is_permeated_id[i];
+                if(this.isConnected(nodes[id],nodes[top_id]) 
+                || this.isConnected(nodes[id],nodes[button_id])) {
+                    is_permeated_id.splice(i, 1)[0];
+                    topoint_id.push(id);
+                    element.querySelector("td:nth-of-type(" + (id + 1) + ")")
                     .classList.add(per_topoint_class);
                 }
             }
         }
-        //标示出于渗透但不与两端相连节点
+        //标示出被渗透但不与两端相连节点
         else {
             element.querySelector("td:nth-of-type(" + (del_id + 1) + ")")
             .classList.add(this.permeated_class);
