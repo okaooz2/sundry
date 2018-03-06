@@ -31,8 +31,7 @@ function Connection() {
     this.path_class = "";    //路径节点的类名
     this.timeout = -1;      //渗透节点的时间间隔，单位毫秒
     this.setTime = null;    //放事件延迟执行函数的指针
-    this.is_line = false;   //判断区域是否为单行或单列
-}
+ }
 Connection.prototype = {
     //初始化对象的方法
     initial: function(obj) {
@@ -46,7 +45,6 @@ Connection.prototype = {
         
         this.top_id = this.width*this.length;
         this.button_id = this.top_id + 1;
-        this.is_line = (this.width===1 || this.length===1) ? true : false;
 
         //创建节点集合
         var id = 0;
@@ -78,33 +76,33 @@ Connection.prototype = {
     letPermeated: function(id) {
         var nodes = this.nodes;
         nodes[id].is_permeated = true;
-        //当行或列为1时
-        if(this.is_line) {
-            switch(id) {
-                case 0:     //为首节点（只有一个节点时也执行这一项）
-                    //判断节点与下一节点是否应该连通
-                    if(nodes[id+1].is_permeated) {
-                        this.letConnected(nodes[id], nodes[id+1]);
-                    }
-                    break;
-                case this.width*this.length - 1:     //为尾节点
-                    //判断节点与上一节点是否应该连通
-                    if(nodes[id-1].is_permeated) {
-                        this.letConnected(nodes[id], nodes[id-1]);
-                    }
-                    break;
-                default :   //节点在中间
-                    //判断节点与前后节点是否应该连通
-                    if(nodes[id+1].is_permeated) {
-                        this.letConnected(nodes[id], nodes[id+1]);
-                    }
-                    if(nodes[id-1].is_permeated) {
-                        this.letConnected(nodes[id], nodes[id-1]);
-                    }
-                    break;
-            }
-            return ;
-        }
+        // //当行或列为1时
+        // if(this.is_line) {
+        //     switch(id) {
+        //         case 0:     //为首节点（只有一个节点时也执行这一项）
+        //             //判断节点与下一节点是否应该连通
+        //             if(nodes[id+1].is_permeated) {
+        //                 this.letConnected(nodes[id], nodes[id+1]);
+        //             }
+        //             break;
+        //         case this.width*this.length - 1:     //为尾节点
+        //             //判断节点与上一节点是否应该连通
+        //             if(nodes[id-1].is_permeated) {
+        //                 this.letConnected(nodes[id], nodes[id-1]);
+        //             }
+        //             break;
+        //         default :   //节点在中间
+        //             //判断节点与前后节点是否应该连通
+        //             if(nodes[id+1].is_permeated) {
+        //                 this.letConnected(nodes[id], nodes[id+1]);
+        //             }
+        //             if(nodes[id-1].is_permeated) {
+        //                 this.letConnected(nodes[id], nodes[id-1]);
+        //             }
+        //             break;
+        //     }
+        //     return ;
+        // }
         //当行或列不为1时
         switch(parseInt(id/this.length)) {  
             case 0:     //节点在第一行
