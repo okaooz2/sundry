@@ -287,7 +287,8 @@ Connection.prototype = {
         //直到两端连通为止，都要继续执行本函数
 
         if(!this.isConnected(nodes[button_id], nodes[top_id])) {
-            this.setTime = window.setTimeout(arguments.callee.bind(this), this.timeout);
+            // this.setTime = window.setTimeout(arguments.callee.bind(this), this.timeout);
+            this.setTime = window.setTimeout(this.work.bind(this), this.timeout);
         }
         else {  //画出连通的路线
             this.draw();
