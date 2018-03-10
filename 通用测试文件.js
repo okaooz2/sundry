@@ -1,49 +1,12 @@
-//关于&&和||的深入探究
+let date = new Date();
+date.setDate(date.getDate()+1);
+console.log(date);
 
-"use strict";
+let cookie_tool = new CookieTool();
+cookie_tool.set({name: "abc", value: "god", expires: date});
+// cookie_tool.unset("abc");
 
-let n = 100;
-console.log(true && n++, `n = ${n}`);   //100 "n = 101"
-console.log(true && ++n, `n = ${n}`);   //102 "n = 102"
-n = 100;
-console.log(true || n++, `n = ${n}`);   //true "n = 100"
-console.log(true || ++n, `n = ${n}`);   //true "n = 100"
-n = 0;
-console.log(n++ || n++, `n = ${n}`);    //1 "n = 2"
-n = null;
-/**
- * 关于&&和||两边表达式执行的问题
- * 1）符号两边执行顺序为从左到右
- * 2）若已经找到了运算结果（||找真值，&&找假值），则不会执行下一条语句（右边语句）
- * 3）他们是以表达式的运算结果再转换为布尔值来表示真假的，但返回值不是该布尔值而是表达式的值
-*/
 
-console.log(`------------------------------------------------------`);
-
-console.log(1 && 2);    //2，两便都是true则返回后面的值
-console.log(0 && "");    //0
-console.log("" && 0);    //"", 两个都是false则返回前面的值
-console.log(1 && 0);    //0
-console.log(0 && 1);    //0，一true一false返回false的值
-/**
- * 对于“&&”的结论：
- * 1）找出符号两边第一个值为假的表达式，并返回其结果
- * 2）若找不到结果为假的表达式，则返回最后一个（第二个）表达式的值
- * 3）所以符号“&&”用于查询值为假的表达式
- * 实用中常用于判断若某函数存在，则执行该函数（用了结论2）
-*/
-
-console.log(`-----------------------------------------------------`);
-
-console.log(1 || 2);    //1，两便都是true则返回前面的值
-console.log(0 || "");    //""
-console.log("" || 0);    //0, 两个都是false则返回后面的值
-console.log(1 || 0);    //1
-console.log(0 || 1);    //1，一true一false返回true的值
-/**
- * 对于“||”结论：
- * 1）找出符号两边第一个值为真的表达式，并返回其结果
- * 2）若找不到结果为真的表达式在，则只能返回最后一个（第二个）表达式的值了
- * 3）所以符号“||”用于查询值为真的表达式的值
- * 实用中常用于查找可行的值（用了结论1）
-*/
+console.log(document.cookie);
+console.log(decodeURIComponent(document.cookie));
+console.log(cookie_tool.get("大神名字"));
