@@ -5,10 +5,12 @@ function CookieTool() {
 CookieTool.prototype = {
     //根据键名查找键值的函数，返回键值；若查找不到键名则返回null
     get: function(name) {
+        
         //编码查询的键名
         let cookie = document.cookie;
-        name = encodeURIComponent(name) + "=";
-        let start_index = cookie.indexOf(name) + name.length;     //此为值的起始索引
+        name = encodeURIComponent(name);
+        const reg = new RegExp(`(^| )(${name})=`, `u`);
+        let start_index = cookie.search(reg);     //此为值的起始索引
         let value = null;
         //当查找到内容时，进一步获取内容
         if(start_index > -1) {
@@ -19,6 +21,8 @@ CookieTool.prototype = {
             else {  //此时说明键值对在最后
                 value = cookie.slice(start_index, end_index);
             }
+            //只取等号后面的值部分
+            value = value.slice(value.search(/=/)+1);
             value = decodeURIComponent(value);
         }
 
@@ -34,11 +38,11 @@ CookieTool.prototype = {
         //设置名和值
         let cookie_text = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
         //设置域名
-        if(!!domain) {
+        if(domain) {
             cookie_text = `${cookie_text}; domain=${domain}`;
         }
         //设置路径
-        if(!!path) {
+        if(path) {
             cookie_text = `${cookie_text}; path=${path}`;
         }
         //设置失效日期
@@ -46,7 +50,7 @@ CookieTool.prototype = {
             cookie_text = `${cookie_text}; expires=${expires.toGMTString()}`;
         }
         //设置安全信息
-        if(!!secure) {
+        if(secure) {
             cookie_text = `${cookie_text}; secure=${secure}`;
         }
         document.cookie = cookie_text;  //这里不会把之前所有cookie覆盖掉，而是会添加现有cookie
