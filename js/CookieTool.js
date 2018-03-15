@@ -22,7 +22,7 @@ CookieTool.prototype = {
                 value = cookie.slice(start_index, end_index);
             }
             //只取等号后面的值部分
-            value = value.slice(value.search(/=/)+1);
+            value = value.slice(value.search(/=/u)+1);
             value = decodeURIComponent(value);
         }
 

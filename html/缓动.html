@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>缓动</title>
+    <style>
+        * {
+            font-size: 1em;
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+
+        div.circle {
+            width: 100px;
+            height: 100px;
+            background: #f00;
+            border-radius: 50%;
+            position: relative;
+            left: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="circle"></div>
+</body>
+<script>
+let circle = document.querySelector("div.circle");
+letSlowMove(circle, [856,523], 150);
+
+//speed为要在多少个单位时间内完成动画，speed越小，动画越快
+function letSlowMove(ele, final_posi, speed) {
+    ele.style.left = getStyle(ele).left;
+    ele.style.top = getStyle(ele).top;
+    let ini_posi = [parseInt(ele.style.left), parseInt(ele.style.top)];
+    let delta_x = final_posi[0] - ini_posi[0];
+    let delta_y = final_posi[1] - ini_posi[1];
+
+    let counter = 0;
+    function move() {
+        ++counter;
+        ele.style.left = easeOut(ini_posi[0], delta_x, speed, counter) + "px";
+        ele.style.top = easeOut(ini_posi[1], delta_y, speed, counter) + "px";
+
+        if(counter < speed) {
+            window.setTimeout(move, 17);
+        }
+    }
+    window.setTimeout(move, 17);
+    
+}
+
+function getStyle(ele, weilei) {
+    if(typeof weilei !== "string") {
+        weilei = null;
+    }
+    return ele.currentStyle ? ele.currentStyle : window.getComputedStyle(ele, weilei);
+}
+//初位置s0, 要移动的距离delta_s, 分多少次执行完动画t, 当前执行次数current_t
+function easeOut(s0, delta_s, t, current_t) {
+    return -delta_s*(current_t/=t)*(current_t-2) + s0;
+}
+</script>
+</html>
